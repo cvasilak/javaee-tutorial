@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!-- JBoss, the OpenSource J2EE webOS                                       -->
+<!--                                                                        -->
+<!-- Distributable under LGPL license.                                      -->
+<!-- See terms of license at http://www.gnu.org.                            -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>JavaEE Tutorial - JAX-RS</name>
+
+  <groupId>org.jboss.ee.tutorial</groupId>
+  <artifactId>javaee-tutorial-jaxrs</artifactId>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.jboss.ee.tutorial</groupId>
+    <artifactId>javaee-tutorial</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- Modules -->
+  <modules>
+    <module>server</module>
+    <module>client</module>
+  </modules>
+  
+</project>

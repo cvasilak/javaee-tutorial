@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!-- JBoss, the OpenSource J2EE webOS                                       -->
+<!--                                                                        -->
+<!-- Distributable under LGPL license.                                      -->
+<!-- See terms of license at http://www.gnu.org.                            -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>JavaEE Tutorial</name>
+
+  <groupId>org.jboss.ee.tutorial</groupId>
+  <artifactId>javaee-tutorial</artifactId>
+  <packaging>pom</packaging>
+
+  <version>1.0.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-parent</artifactId>
+    <version>6</version>
+  </parent>
+
+  <!-- Source Control -->
+  <scm>
+    <connection>scm:git:git://github.com/tdiesler/javaee-tutorial.git</connection>
+    <developerConnection>scm:git:git@github.com:tdiesler/javaee-tutorial.git</developerConnection>
+    <url>http://github.com/tdiesler/javaee-tutorial</url>
+  </scm>
+
+  <!-- Modules -->
+  <modules>
+    <module>jaxrs</module>
+  </modules>
+
+  <!-- Properties -->
+  <properties>
+    <version.org.jboss.arquillian.core>1.0.0.CR4</version.org.jboss.arquillian.core>
+    <version.org.jboss.logging>3.0.0.GA</version.org.jboss.logging>
+    <version.org.jboss.logmanager>1.2.0.GA</version.org.jboss.logmanager>
+  	<version.org.jboss.resteasy.jaxrs>2.2.1.GA</version.org.jboss.resteasy.jaxrs>
+    <version.org.jboss.as7>7.1.0.Alpha1-SNAPSHOT</version.org.jboss.as7>
+    <version.junit>4.8.2</version.junit>
+  </properties>
+
+  <!-- DependencyManagement -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-container-test-api</artifactId>
+        <version>${version.org.jboss.arquillian.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <version>${version.org.jboss.arquillian.core}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-arquillian-container-managed</artifactId>
+        <version>${version.org.jboss.as7}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.org.jboss.logging}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logmanager</groupId>
+        <artifactId>jboss-logmanager</artifactId>
+        <version>${version.org.jboss.logmanager}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${version.org.jboss.resteasy.jaxrs}</version>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- Repositories -->
+  <repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>
