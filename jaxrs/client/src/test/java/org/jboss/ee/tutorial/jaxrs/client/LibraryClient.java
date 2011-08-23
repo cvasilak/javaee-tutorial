@@ -19,38 +19,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ee.tutorial.jaxrs.server;
+package org.jboss.ee.tutorial.jaxrs.client;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
-@XmlRootElement
-public class Book {
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
-    private String isbn;
-    private String name;
+@Consumes({ "application/json" })
+public interface LibraryClient {
 
-    public Book() {
-    }
+    @GET
+    @Path("/books")
+    @Produces({ "application/json" })
+    public Collection<Book> getBooks();
 
-    public Book(String isbn, String name) {
-        this.isbn = isbn;
-        this.name = name;
-    }
+    @GET
+    @Path("/book/{isbn}")
+    public Book getBook(@PathParam("isbn") String id);
 
-    public String getIsbn() {
-        return isbn;
-    }
+    @PUT
+    @Path("/book/{isbn}")
+    public void addBook(String id, Book book);
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @DELETE
+    @Path("/book/{id}")
+    public void removeBook(@PathParam("id") String id);
 }

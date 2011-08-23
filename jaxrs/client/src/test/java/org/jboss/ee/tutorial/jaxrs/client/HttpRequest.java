@@ -55,6 +55,30 @@ public class HttpRequest {
         return execute(task, timeout, unit);
     }
 
+    public static String put(final String spec, final String message, final long timeout, final TimeUnit unit) throws MalformedURLException, ExecutionException, TimeoutException {
+        final URL url = new URL(spec);
+        Callable<String> task = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestMethod("PUT");
+                if (message != null) {
+                    final OutputStream out = conn.getOutputStream();
+                    try {
+                        write(out, message);
+                    }
+                    finally {
+                        out.close();
+                    }
+                }
+                return processResponse(conn);
+            }
+        };
+        return execute(task, timeout, unit);
+    }
+
     private static String read(final InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         int b;
@@ -82,27 +106,6 @@ public class HttpRequest {
         finally {
             in.close();
         }
-    }
-
-    public static String put(final String spec, final String message, final long timeout, final TimeUnit unit) throws MalformedURLException, ExecutionException, TimeoutException {
-        final URL url = new URL(spec);
-        Callable<String> task = new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                final OutputStream out = conn.getOutputStream();
-                try {
-                    write(out, message);
-                    return processResponse(conn);
-                }
-                finally {
-                    out.close();
-                }
-            }
-        };
-        return execute(task, timeout, unit);
     }
 
     private static String execute(final Callable<String> task, final long timeout, final TimeUnit unit) throws TimeoutException, ExecutionException {

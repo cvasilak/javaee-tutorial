@@ -26,9 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -41,8 +39,10 @@ public class Library {
     private Map<String, Book> books = new LinkedHashMap<String, Book>();
 
     public Library() {
-        Book book = new Book("1234", "Harry Potter");
-        books.put(book.getIsbn(), book);
+        Book[] bookarr = new Book[] { new Book("1234", "Harry Potter") };
+        for (Book book : bookarr) {
+            books.put(book.getIsbn(), book);
+        }
     }
 
     @GET
@@ -58,17 +58,4 @@ public class Library {
         return result;
 
     }
-
-    @PUT
-    @Path("/book/{isbn}")
-    public void addBook(Book book) {
-        books.put(book.getIsbn(), book);
-    }
-
-    @DELETE
-    @Path("/book/{id}")
-    public void removeBook(@PathParam("id") String id) {
-        books.remove(id);
-    }
-
 }

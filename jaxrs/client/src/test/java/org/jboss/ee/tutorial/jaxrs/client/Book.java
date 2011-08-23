@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ee.tutorial.jaxrs.server;
+package org.jboss.ee.tutorial.jaxrs.client;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -29,6 +29,7 @@ public class Book {
     private String isbn;
     private String name;
 
+    
     public Book() {
     }
 

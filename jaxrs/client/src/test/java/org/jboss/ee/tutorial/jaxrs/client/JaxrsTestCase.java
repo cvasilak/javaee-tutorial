@@ -21,24 +21,40 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunAsClient
 @RunWith(Arquillian.class)
-public class JaxrsSampleTestCase {
+public class JaxrsTestCase {
+    
+    static LibraryClient client;
+    static {
+        // This initialization only needs to be done once per VM
+        RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+        client = ProxyFactory.create(LibraryClient.class, "http://localhost:8080/jaxrs-sample/library");
+    }
 
     @Deployment(testable = false)
     public static Archive<?> deploy() {
@@ -54,12 +70,35 @@ public class JaxrsSampleTestCase {
     }
 
     @Test
-    public void testSimpleJacksonResource() throws Exception {
-        String result = performCall("library/books");
+    public void testHttpGetList() throws Exception {
+        String result = httpGet("library/books");
         Assert.assertEquals("[{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}]", result);
     }
 
-    private static String performCall(String urlPattern) throws Exception {
-        return HttpRequest.get("http://localhost:8080/jaxrs-sample/" + urlPattern, 5, TimeUnit.SECONDS);
+    @Test
+    public void testHttpGet() throws Exception {
+        String result = httpGet("library/book/1234");
+        Assert.assertEquals("{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}", result);
+    }
+
+    @Test
+    public void testClientList() throws Exception {
+        Collection<Book> books = client.getBooks();
+        assertNotNull("Books not null", books);
+        assertEquals(1, books.size());
+        Book book = books.iterator().next();
+        assertEquals("Harry Potter", book.getName());
+        assertEquals("1234", book.getIsbn());
+    }
+
+    @Test
+    public void testClientGet() throws Exception {
+        Book book = client.getBook("1234");
+        assertEquals("Harry Potter", book.getName());
+        assertEquals("1234", book.getIsbn());
+    }
+
+    private String httpGet(String uriPath) throws MalformedURLException, ExecutionException, TimeoutException {
+        return HttpRequest.get("http://localhost:8080/jaxrs-sample/" + uriPath, 5, TimeUnit.SECONDS);
     }
 }
