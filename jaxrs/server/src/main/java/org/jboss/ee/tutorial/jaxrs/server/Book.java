@@ -23,6 +23,12 @@ package org.jboss.ee.tutorial.jaxrs.server;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * A simple JAX-RS resource
+ * 
+ * @author thomas.diesler@jboss.com
+ * @since 23-Aug-2011
+ */
 @XmlRootElement
 public class Book {
 
@@ -53,4 +59,8 @@ public class Book {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Book [isbn=" + isbn + ", name=" + name + "]";
+    }
 }

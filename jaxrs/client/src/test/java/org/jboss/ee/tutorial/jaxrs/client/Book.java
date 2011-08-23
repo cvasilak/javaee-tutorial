@@ -28,7 +28,6 @@ public class Book {
 
     private String isbn;
     private String name;
-
     
     public Book() {
     }
@@ -54,4 +53,8 @@ public class Book {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Book [isbn=" + isbn + ", name=" + name + "]";
+    }
 }

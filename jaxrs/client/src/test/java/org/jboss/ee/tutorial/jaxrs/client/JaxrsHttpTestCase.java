@@ -21,13 +21,9 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,9 +31,6 @@ import java.util.concurrent.TimeoutException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -45,17 +38,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * The JAX-RS HTTP request test
+ * 
+ * @author thomas.diesler@jboss.com
+ * @since 23-Aug-2011
+ */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class JaxrsTestCase {
+public class JaxrsHttpTestCase {
     
-    static LibraryClient client;
-    static {
-        // This initialization only needs to be done once per VM
-        RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-        client = ProxyFactory.create(LibraryClient.class, "http://localhost:8080/jaxrs-sample/library");
-    }
-
+    private static final String REQUEST_PATH = "http://localhost:8080/jaxrs-sample/library";
+    
     @Deployment(testable = false)
     public static Archive<?> deploy() {
         File serverTargetDir = new File("../server/target");
@@ -71,34 +65,37 @@ public class JaxrsTestCase {
 
     @Test
     public void testHttpGetList() throws Exception {
-        String result = httpGet("library/books");
+        String result = httpGet("/books");
         Assert.assertEquals("[{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}]", result);
     }
 
     @Test
     public void testHttpGet() throws Exception {
-        String result = httpGet("library/book/1234");
+        String result = httpGet("/book/1234");
         Assert.assertEquals("{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}", result);
     }
 
     @Test
-    public void testClientList() throws Exception {
-        Collection<Book> books = client.getBooks();
-        assertNotNull("Books not null", books);
-        assertEquals(1, books.size());
-        Book book = books.iterator().next();
-        assertEquals("Harry Potter", book.getName());
-        assertEquals("1234", book.getIsbn());
+    public void testHttpPut() throws Exception {
+        String result = httpPut("/book/5678?name=Android", null);
+        Assert.assertEquals("{\"name\":\"Android\",\"isbn\":\"5678\"}", result);
     }
 
     @Test
-    public void testClientGet() throws Exception {
-        Book book = client.getBook("1234");
-        assertEquals("Harry Potter", book.getName());
-        assertEquals("1234", book.getIsbn());
+    public void testHttpDelete() throws Exception {
+        String result = httpDelete("/book/5678");
+        Assert.assertEquals("{\"name\":\"Android\",\"isbn\":\"5678\"}", result);
     }
 
     private String httpGet(String uriPath) throws MalformedURLException, ExecutionException, TimeoutException {
-        return HttpRequest.get("http://localhost:8080/jaxrs-sample/" + uriPath, 5, TimeUnit.SECONDS);
+        return HttpRequest.get(REQUEST_PATH + uriPath, 5, TimeUnit.SECONDS);
+    }
+
+    private String httpPut(String uriPath, String message) throws MalformedURLException, ExecutionException, TimeoutException {
+        return HttpRequest.put(REQUEST_PATH + uriPath, message, 5, TimeUnit.SECONDS);
+    }
+
+    private String httpDelete(String uriPath) throws MalformedURLException, ExecutionException, TimeoutException {
+        return HttpRequest.delete(REQUEST_PATH + uriPath, 5, TimeUnit.SECONDS);
     }
 }

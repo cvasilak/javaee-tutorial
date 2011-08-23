@@ -26,17 +26,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
+import org.jboss.logging.Logger;
+
+/**
+ * A simple JAX-RS endpoint
+ * 
+ * @author thomas.diesler@jboss.com
+ * @since 23-Aug-2011
+ */
 @Path("/library")
 @Consumes({ "application/json" })
 @Produces({ "application/json" })
 public class Library {
 
-    private Map<String, Book> books = new LinkedHashMap<String, Book>();
+    private static final Logger log = Logger.getLogger(Library.class);
+
+    private static Map<String, Book> books = new LinkedHashMap<String, Book>();
 
     public Library() {
         Book[] bookarr = new Book[] { new Book("1234", "Harry Potter") };
@@ -48,14 +61,33 @@ public class Library {
     @GET
     @Path("/books")
     public Collection<Book> getBooks() {
-        return books.values();
+        Collection<Book> result = books.values();
+        log.infof("getBooks: %s", result);
+        return result;
     }
 
     @GET
     @Path("/book/{isbn}")
     public Book getBook(@PathParam("isbn") String id) {
-        Book result = books.get(id);
-        return result;
+        Book book = books.get(id);
+        log.infof("getBook: %s", book);
+        return book;
+    }
 
+    @PUT
+    @Path("/book/{isbn}")
+    public Book addBook(@PathParam("isbn") String id, @QueryParam("name") String name) {
+        Book book = new Book(id, name);
+        log.infof("addBook: %s", book);
+        books.put(id, book);
+        return book;
+    }
+
+    @DELETE
+    @Path("/book/{isbn}")
+    public Book removeBook(@PathParam("isbn") String id) {
+        Book book = books.remove(id);
+        log.infof("removeBook: %s", book);
+        return book;
     }
 }

@@ -30,13 +30,20 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
+/**
+ * A simple JAX-RS client proxy
+ * 
+ * @author thomas.diesler@jboss.com
+ * @since 23-Aug-2011
+ */
 @Consumes({ "application/json" })
+@Produces({ "application/json" })
 public interface LibraryClient {
 
     @GET
     @Path("/books")
-    @Produces({ "application/json" })
     public Collection<Book> getBooks();
 
     @GET
@@ -45,9 +52,9 @@ public interface LibraryClient {
 
     @PUT
     @Path("/book/{isbn}")
-    public void addBook(String id, Book book);
+    public Book addBook(@PathParam("isbn") String id, @QueryParam("name") String name);
 
     @DELETE
-    @Path("/book/{id}")
-    public void removeBook(@PathParam("id") String id);
+    @Path("/book/{isbn}")
+    public Book removeBook(@PathParam("isbn") String id);
 }

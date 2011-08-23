@@ -21,6 +21,9 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +41,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
+ * An HTTP request utility
+ * 
+ * @author thomas.diesler@jboss.com
+ * @since 23-Aug-2011
  */
 public class HttpRequest {
     
@@ -62,9 +68,9 @@ public class HttpRequest {
             public String call() throws Exception {
                 final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoInput(true);
-                conn.setDoOutput(true);
                 conn.setRequestMethod("PUT");
                 if (message != null) {
+                    conn.setDoOutput(true);
                     final OutputStream out = conn.getOutputStream();
                     try {
                         write(out, message);
@@ -73,6 +79,20 @@ public class HttpRequest {
                         out.close();
                     }
                 }
+                return processResponse(conn);
+            }
+        };
+        return execute(task, timeout, unit);
+    }
+
+    public static String delete(final String spec, final long timeout, final TimeUnit unit) throws MalformedURLException, ExecutionException, TimeoutException {
+        final URL url = new URL(spec);
+        Callable<String> task = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true);
+                conn.setRequestMethod("DELETE");
                 return processResponse(conn);
             }
         };
@@ -90,7 +110,10 @@ public class HttpRequest {
 
     private static String processResponse(HttpURLConnection conn) throws IOException {
         int responseCode = conn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
+        if (responseCode == HTTP_NO_CONTENT) { 
+            return null;
+        }
+        if (responseCode != HTTP_OK) {
             final InputStream err = conn.getErrorStream();
             try {
                 throw new IOException(read(err));
