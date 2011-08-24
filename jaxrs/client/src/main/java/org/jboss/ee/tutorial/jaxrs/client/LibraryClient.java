@@ -19,48 +19,47 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ee.tutorial.jaxrs.server;
+package org.jboss.ee.tutorial.jaxrs.client;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 /**
- * A simple JAX-RS resource
+ * A simple JAX-RS client proxy
  * 
  * @author thomas.diesler@jboss.com
  * @since 23-Aug-2011
  */
-@XmlRootElement
-public class Book {
+@Consumes({ "application/json" })
+@Produces({ "application/json" })
+public interface LibraryClient {
 
-    private String isbn;
-    private String title;
+    @GET
+    @Path("/books")
+    public Collection<Book> getBooks();
 
-    public Book() {
-    }
+    @GET
+    @Path("/book/{isbn}")
+    public Book getBook(@PathParam("isbn") String id);
 
-    public Book(String isbn, String title) {
-        this.isbn = isbn;
-        this.title = title;
-    }
+    @PUT
+    @Path("/book/{isbn}")
+    public Book addBook(@PathParam("isbn") String id, @QueryParam("title") String title);
 
-    public String getIsbn() {
-        return isbn;
-    }
+    @POST
+    @Path("/book/{isbn}")
+    public Book updateBook(@PathParam("isbn") String id, String title);
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String name) {
-        this.title = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Book [isbn=" + isbn + ", title=" + title + "]";
-    }
+    @DELETE
+    @Path("/book/{isbn}")
+    public Book removeBook(@PathParam("isbn") String id);
 }

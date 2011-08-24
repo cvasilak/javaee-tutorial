@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -50,9 +51,13 @@ public class Library {
     private static final Logger log = Logger.getLogger(Library.class);
 
     private static Map<String, Book> books = new LinkedHashMap<String, Book>();
-
-    public Library() {
-        Book[] bookarr = new Book[] { new Book("1234", "Harry Potter") };
+    static {
+        Book[] bookarr = new Book[] { 
+                new Book("001", "The Judgment"), 
+                new Book("002", "The Stoker"), 
+                new Book("003", "Jackals and Arabs"), 
+                new Book("004", "The Refusal") 
+        };
         for (Book book : bookarr) {
             books.put(book.getIsbn(), book);
         }
@@ -76,10 +81,21 @@ public class Library {
 
     @PUT
     @Path("/book/{isbn}")
-    public Book addBook(@PathParam("isbn") String id, @QueryParam("name") String name) {
-        Book book = new Book(id, name);
+    public Book addBook(@PathParam("isbn") String id, @QueryParam("title") String title) {
+        Book book = new Book(id, title);
         log.infof("addBook: %s", book);
         books.put(id, book);
+        return book;
+    }
+
+    @POST
+    @Path("/book/{isbn}")
+    public Book updateBook(@PathParam("isbn") String id, String title) {
+        Book book = books.get(id);
+        if (book != null) {
+            book.setTitle(title);
+        }
+        log.infof("updateBook: %s", book);
         return book;
     }
 

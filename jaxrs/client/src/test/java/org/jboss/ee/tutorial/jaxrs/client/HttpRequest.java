@@ -47,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  * @since 23-Aug-2011
  */
 public class HttpRequest {
-    
+
     public static String get(final String spec, final long timeout, final TimeUnit unit) throws MalformedURLException, ExecutionException, TimeoutException {
         final URL url = new URL(spec);
         Callable<String> task = new Callable<String>() {
@@ -74,10 +74,32 @@ public class HttpRequest {
                     final OutputStream out = conn.getOutputStream();
                     try {
                         write(out, message);
-                    }
-                    finally {
+                    } finally {
                         out.close();
                     }
+                }
+                return processResponse(conn);
+            }
+        };
+        return execute(task, timeout, unit);
+    }
+
+    public static String post(final String spec, final String message, final long timeout, final TimeUnit unit) throws MalformedURLException, ExecutionException, TimeoutException {
+        final URL url = new URL(spec);
+        Callable<String> task = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                final OutputStream out = conn.getOutputStream();
+                try {
+                    if (message != null) {
+                        write(out, message);
+                    }
+                } finally {
+                    out.close();
                 }
                 return processResponse(conn);
             }
@@ -102,7 +124,7 @@ public class HttpRequest {
     private static String read(final InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         int b;
-        while((b = in.read()) != -1) {
+        while ((b = in.read()) != -1) {
             out.write(b);
         }
         return out.toString();
@@ -110,28 +132,27 @@ public class HttpRequest {
 
     private static String processResponse(HttpURLConnection conn) throws IOException {
         int responseCode = conn.getResponseCode();
-        if (responseCode == HTTP_NO_CONTENT) { 
+        if (responseCode == HTTP_NO_CONTENT) {
             return null;
         }
         if (responseCode != HTTP_OK) {
             final InputStream err = conn.getErrorStream();
             try {
                 throw new IOException(read(err));
-            }
-            finally {
+            } finally {
                 err.close();
             }
         }
         final InputStream in = conn.getInputStream();
         try {
             return read(in);
-        }
-        finally {
+        } finally {
             in.close();
         }
     }
 
-    private static String execute(final Callable<String> task, final long timeout, final TimeUnit unit) throws TimeoutException, ExecutionException {
+    private static String execute(final Callable<String> task, final long timeout, final TimeUnit unit)
+            throws TimeoutException, ExecutionException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Future<String> result = executor.submit(task);
         try {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="org.jboss.ee.tutorial.jaxrs.android">
+  <application
+    android:name=".LibraryApplication"
+    android:debuggable="true"
+    android:label="@string/app_name">
+    <activity
+      android:name=".LibraryListActivity"
+      android:label="@string/app_name">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+      android:name=".BookEditActivity"
+      android:label="@string/edit_book_title" />
+    <activity
+      android:name=".LibraryPreferences"
+      android:label="@string/app_name" />
+  </application>
+
+  <uses-sdk
+    android:minSdkVersion="8"
+    android:targetSdkVersion="8" />
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  
+</manifest> 

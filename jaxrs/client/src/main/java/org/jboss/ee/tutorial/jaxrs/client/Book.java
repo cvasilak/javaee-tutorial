@@ -21,40 +21,40 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+@XmlRootElement
+public class Book {
 
-/**
- * A simple JAX-RS client proxy
- * 
- * @author thomas.diesler@jboss.com
- * @since 23-Aug-2011
- */
-@Consumes({ "application/json" })
-@Produces({ "application/json" })
-public interface LibraryClient {
+    private String isbn;
+    private String title;
+    
+    public Book() {
+    }
 
-    @GET
-    @Path("/books")
-    public Collection<Book> getBooks();
+    public Book(String isbn, String title) {
+        this.isbn = isbn;
+        this.title = title;
+    }
 
-    @GET
-    @Path("/book/{isbn}")
-    public Book getBook(@PathParam("isbn") String id);
+    public String getIsbn() {
+        return isbn;
+    }
 
-    @PUT
-    @Path("/book/{isbn}")
-    public Book addBook(@PathParam("isbn") String id, @QueryParam("name") String name);
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
 
-    @DELETE
-    @Path("/book/{isbn}")
-    public Book removeBook(@PathParam("isbn") String id);
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String name) {
+        this.title = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Book [isbn=" + isbn + ", title=" + title + "]";
+    }
 }

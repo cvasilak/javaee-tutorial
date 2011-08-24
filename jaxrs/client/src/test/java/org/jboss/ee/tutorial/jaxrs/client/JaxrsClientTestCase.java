@@ -75,30 +75,47 @@ public class JaxrsClientTestCase {
     public void testClientList() throws Exception {
         Collection<Book> books = client.getBooks();
         assertNotNull("Books not null", books);
-        assertEquals(1, books.size());
-        Book book = books.iterator().next();
-        assertEquals("Harry Potter", book.getName());
-        assertEquals("1234", book.getIsbn());
+        assertEquals(4, books.size());
     }
 
     @Test
     public void testClientGet() throws Exception {
-        Book book = client.getBook("1234");
-        assertEquals("Harry Potter", book.getName());
-        assertEquals("1234", book.getIsbn());
+        Book book = client.getBook("001");
+        assertNotNull("Book not null", book);
+        assertEquals("The Judgment", book.getTitle());
+        assertEquals("001", book.getIsbn());
     }
 
     @Test
     public void testClientAdd() throws Exception {
-        Book book = client.addBook("5678", "Android");
-        assertEquals("Android", book.getName());
-        assertEquals("5678", book.getIsbn());
+        Book book = client.addBook("1234", "Android");
+        assertNotNull("Book not null", book);
+        assertEquals("Android", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        Collection<Book> books = client.getBooks();
+        assertNotNull("Books not null", books);
+        assertEquals(5, books.size());
+    }
+
+    @Test
+    public void testClientUpdate() throws Exception {
+        Book book = client.updateBook("1234", "Android for Dummies");
+        assertNotNull("Book not null", book);
+        assertEquals("Android for Dummies", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        Collection<Book> books = client.getBooks();
+        assertNotNull("Books not null", books);
+        assertEquals(5, books.size());
     }
 
     @Test
     public void testClientDelete() throws Exception {
-        Book book = client.removeBook("5678");
-        assertEquals("Android", book.getName());
-        assertEquals("5678", book.getIsbn());
+        Book book = client.removeBook("1234");
+        assertNotNull("Book not null", book);
+        assertEquals("Android for Dummies", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        Collection<Book> books = client.getBooks();
+        assertNotNull("Books not null", books);
+        assertEquals(4, books.size());
     }
 }

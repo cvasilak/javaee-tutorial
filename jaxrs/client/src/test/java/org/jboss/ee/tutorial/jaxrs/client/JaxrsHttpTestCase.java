@@ -21,6 +21,9 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
@@ -28,13 +31,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -65,26 +68,58 @@ public class JaxrsHttpTestCase {
 
     @Test
     public void testHttpGetList() throws Exception {
-        String result = httpGet("/books");
-        Assert.assertEquals("[{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}]", result);
+        String content = httpGet("/books");
+        Book[] books = new ObjectMapper().readValue(content, Book[].class);
+        assertNotNull("Books not null", books);
+        assertEquals(4, books.length);
     }
 
     @Test
     public void testHttpGet() throws Exception {
-        String result = httpGet("/book/1234");
-        Assert.assertEquals("{\"name\":\"Harry Potter\",\"isbn\":\"1234\"}", result);
+        String content = httpGet("/book/001");
+        Book book = new ObjectMapper().readValue(content, Book.class);
+        assertNotNull("Book not null", book);
+        assertEquals("The Judgment", book.getTitle());
+        assertEquals("001", book.getIsbn());
     }
 
     @Test
     public void testHttpPut() throws Exception {
-        String result = httpPut("/book/5678?name=Android", null);
-        Assert.assertEquals("{\"name\":\"Android\",\"isbn\":\"5678\"}", result);
+        String content = httpPut("/book/1234?title=Android", null);
+        Book book = new ObjectMapper().readValue(content, Book.class);
+        assertNotNull("Book not null", book);
+        assertEquals("Android", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        content = httpGet("/books");
+        Book[] books = new ObjectMapper().readValue(content, Book[].class);
+        assertNotNull("Books not null", books);
+        assertEquals(5, books.length);
+    }
+
+    @Test
+    public void testHttpUpdate() throws Exception {
+        String content = httpPost("/book/1234", "Android for Dummies");
+        Book book = new ObjectMapper().readValue(content, Book.class);
+        assertNotNull("Book not null", book);
+        assertEquals("Android for Dummies", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        content = httpGet("/books");
+        Book[] books = new ObjectMapper().readValue(content, Book[].class);
+        assertNotNull("Books not null", books);
+        assertEquals(5, books.length);
     }
 
     @Test
     public void testHttpDelete() throws Exception {
-        String result = httpDelete("/book/5678");
-        Assert.assertEquals("{\"name\":\"Android\",\"isbn\":\"5678\"}", result);
+        String content = httpDelete("/book/1234");
+        Book book = new ObjectMapper().readValue(content, Book.class);
+        assertNotNull("Book not null", book);
+        assertEquals("Android for Dummies", book.getTitle());
+        assertEquals("1234", book.getIsbn());
+        content = httpGet("/books");
+        Book[] books = new ObjectMapper().readValue(content, Book[].class);
+        assertNotNull("Books not null", books);
+        assertEquals(4, books.length);
     }
 
     private String httpGet(String uriPath) throws MalformedURLException, ExecutionException, TimeoutException {
@@ -93,6 +128,10 @@ public class JaxrsHttpTestCase {
 
     private String httpPut(String uriPath, String message) throws MalformedURLException, ExecutionException, TimeoutException {
         return HttpRequest.put(REQUEST_PATH + uriPath, message, 5, TimeUnit.SECONDS);
+    }
+
+    private String httpPost(String uriPath, String message) throws MalformedURLException, ExecutionException, TimeoutException {
+        return HttpRequest.post(REQUEST_PATH + uriPath, message, 5, TimeUnit.SECONDS);
     }
 
     private String httpDelete(String uriPath) throws MalformedURLException, ExecutionException, TimeoutException {
