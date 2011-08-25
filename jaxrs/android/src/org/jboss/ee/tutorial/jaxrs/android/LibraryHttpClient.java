@@ -24,6 +24,7 @@ package org.jboss.ee.tutorial.jaxrs.android;
 import static org.jboss.ee.tutorial.jaxrs.android.LibraryApplication.LOG_TAG;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -32,13 +33,8 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
@@ -46,7 +42,6 @@ import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -57,59 +52,23 @@ import android.util.Log;
  * @author thomas.diesler@jboss.com
  * @since 23-Aug-2011
  */
-public class LibraryHttpClient implements OnSharedPreferenceChangeListener {
+public class LibraryHttpClient {
 
     private final Context context;
-    private ClientConnectionManager conManager;
     private HttpClient httpClient;
-    private String requestURL;
     
     public LibraryHttpClient(Context context) {
         this.context = context;
-        
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.registerOnSharedPreferenceChangeListener(this);
-        
-        initHttpClient();
-    }
-
-    private void initHttpClient() {
-        if (conManager != null) {
-            conManager.shutdown();
-        }
-        
         BasicHttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
         HttpProtocolParams.setUseExpectContinue(params, false);
-        
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String hostKey = context.getString(R.string.pref_host_key);
-        String host = prefs.getString(hostKey, context.getString(R.string.pref_host_summary));
-        String portKey = context.getString(R.string.pref_port_key);
-        int port = Integer.parseInt(prefs.getString(portKey, "80"));
-        
-        SchemeRegistry sreg = new SchemeRegistry();
-        sreg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), port));
-        conManager = new ThreadSafeClientConnManager(params, sreg);
-        httpClient = new DefaultHttpClient(conManager, params);
-        requestURL = "http://" +  host + ":" + port + "/jaxrs-sample/library";
-        Log.i(LOG_TAG, "requestURL: " + requestURL);
+        httpClient = new DefaultHttpClient(params);
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        initHttpClient();
-    }
-    
-    public void shutdown() {
-        if (conManager != null) {
-            conManager.shutdown();
-        }
-    }
-    
     public String get(String path) {
         try {
-            HttpGet request = new HttpGet(new URI(requestURL + "/" + path));
+            HttpGet request = new HttpGet(getRequestURI(path));
             HttpResponse res = httpClient.execute(request);
             String content = EntityUtils.toString(res.getEntity());
             return content;
@@ -121,7 +80,7 @@ public class LibraryHttpClient implements OnSharedPreferenceChangeListener {
 
     public String put(String path, String title) {
         try {
-            HttpPut request = new HttpPut(new URI(requestURL + "/" + path + "?title=" + title));
+            HttpPut request = new HttpPut(getRequestURI(path + "?title=" + title));
             HttpResponse res = httpClient.execute(request);
             String content = EntityUtils.toString(res.getEntity());
             return content;
@@ -133,7 +92,7 @@ public class LibraryHttpClient implements OnSharedPreferenceChangeListener {
     
     public String post(String path, String title) {
         try {
-            HttpPost request = new HttpPost(new URI(requestURL + "/" + path));
+            HttpPost request = new HttpPost(getRequestURI(path));
             request.setHeader("Content-Type", "application/json");
             request.setEntity(new StringEntity(title));
             HttpResponse res = httpClient.execute(request);
@@ -147,7 +106,7 @@ public class LibraryHttpClient implements OnSharedPreferenceChangeListener {
     
     public String delete(String path) {
         try {
-            HttpDelete request = new HttpDelete(new URI(requestURL + "/" + path));
+            HttpDelete request = new HttpDelete(getRequestURI(path));
             HttpResponse res = httpClient.execute(request);
             String content = EntityUtils.toString(res.getEntity());
             return content;
@@ -155,5 +114,16 @@ public class LibraryHttpClient implements OnSharedPreferenceChangeListener {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    private URI getRequestURI(String path) throws URISyntaxException {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String hostKey = context.getString(R.string.pref_host_key);
+        String host = prefs.getString(hostKey, context.getString(R.string.pref_host_summary));
+        String portKey = context.getString(R.string.pref_port_key);
+        int port = Integer.parseInt(prefs.getString(portKey, "80"));
+        URI requestURI = new URI("http://" +  host + ":" + port + "/jaxrs-sample/library/" + path);
+        Log.i(LOG_TAG, "requestURI: " + requestURI);
+        return requestURI;
     }
 }

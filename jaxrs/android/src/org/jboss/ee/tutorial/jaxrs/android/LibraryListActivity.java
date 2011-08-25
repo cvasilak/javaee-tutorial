@@ -4,7 +4,10 @@ import java.util.Collection;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -15,7 +18,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class LibraryListActivity extends ListActivity {
+public class LibraryListActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
@@ -24,10 +27,19 @@ public class LibraryListActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.book_list);
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        
         fillData();
         registerForContextMenu(getListView());
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        fillData();
+    }
+    
     private void fillData() {
         LibraryAccess library = getLibraryAccess();
         Collection<String> bookNames = library.getBookTitles();
@@ -53,12 +65,13 @@ public class LibraryListActivity extends ListActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_insert:
-                createBook();
+            case R.id.menu_insert: 
+                Intent iInsert = new Intent(this, BookEditActivity.class);
+                startActivityForResult(iInsert, ACTIVITY_CREATE);
                 return true;
             case R.id.menu_settings:
-                Intent intent = new Intent(this, LibraryPreferences.class);
-                startActivity(intent);
+                Intent iSettings = new Intent(this, LibraryPreferences.class);
+                startActivity(iSettings);
                 return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -83,11 +96,6 @@ public class LibraryListActivity extends ListActivity {
                 return true;
         }
         return super.onContextItemSelected(item);
-    }
-
-    private void createBook() {
-        Intent i = new Intent(this, BookEditActivity.class);
-        startActivityForResult(i, ACTIVITY_CREATE);
     }
 
     @Override

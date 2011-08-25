@@ -155,10 +155,4 @@ public class LibraryAccess {
         Log.i(LOG_TAG, "removeBook: " + result);
         return result;
     }
-
-    public void shutdown() {
-        if (httpClient != null) {
-            httpClient.shutdown();
-        }
-    }
 }

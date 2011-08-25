@@ -15,12 +15,6 @@ public class LibraryApplication extends Application {
         library = new LibraryAccess(this);
     }
 
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        library.shutdown();
-    }
-
     public LibraryAccess getLibraryAccess() {
         return library;
     }

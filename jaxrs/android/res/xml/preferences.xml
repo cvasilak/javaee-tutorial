@@ -11,6 +11,7 @@
       android:key="@string/pref_port_key"
       android:dialogTitle="@string/pref_port_title"
       android:summary="@string/pref_port_summary"
+      android:numeric="integer"
       android:title="@string/pref_port_title" />
   </PreferenceCategory>
 </PreferenceScreen>
