@@ -34,12 +34,14 @@
     <version.org.jboss.logging>3.0.0.GA</version.org.jboss.logging>
     <version.org.jboss.logmanager>1.2.0.GA</version.org.jboss.logmanager>
     <version.org.jboss.resteasy.jaxrs>2.2.1.GA</version.org.jboss.resteasy.jaxrs>
+    <version.org.jboss.mobile.resteasy.client>1.0.0-SNAPSHOT</version.org.jboss.mobile.resteasy.client>
     <version.org.jboss.as7>7.1.0.Alpha1-SNAPSHOT</version.org.jboss.as7>
     <version.junit>4.8.2</version.junit>
   </properties>
 
   <!-- Modules -->
   <modules>
+    <module>mobile-resteasy-client</module>
     <module>jaxrs</module>
   </modules>
 
@@ -87,6 +89,11 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jackson-provider</artifactId>
         <version>${version.org.jboss.resteasy.jaxrs}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.mobile.resteasy</groupId>
+        <artifactId>mobile-resteasy-client</artifactId>
+        <version>${version.org.jboss.mobile.resteasy.client}</version>
       </dependency>
       <dependency>
          <groupId>junit</groupId>

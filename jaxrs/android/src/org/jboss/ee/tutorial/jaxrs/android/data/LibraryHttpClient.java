@@ -19,12 +19,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ee.tutorial.jaxrs.android;
+package org.jboss.ee.tutorial.jaxrs.android.data;
 
 import static org.jboss.ee.tutorial.jaxrs.android.LibraryApplication.LOG_TAG;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -39,26 +42,31 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.jboss.ee.tutorial.jaxrs.android.R;
+import org.jboss.ee.tutorial.jaxrs.android.R.string;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-
 /**
- * The Library HttpClient
  * 
  * @author thomas.diesler@jboss.com
  * @since 23-Aug-2011
  */
-public class LibraryHttpClient {
+public class LibraryHttpClient implements Library {
 
     private final Context context;
-    private HttpClient httpClient;
-    
+    private final HttpClient httpClient;
+
     public LibraryHttpClient(Context context) {
         this.context = context;
+        
         BasicHttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
@@ -66,7 +74,103 @@ public class LibraryHttpClient {
         httpClient = new DefaultHttpClient(params);
     }
 
-    public String get(String path) {
+    @Override
+    public List<Book> getBooks() {
+        List<Book> result = new ArrayList<Book>();
+        String content = get("books");
+        Log.d(LOG_TAG, "Result content:" + content);
+        if (content != null) {
+            try {
+                JSONTokener tokener = new JSONTokener(content);
+                JSONArray array = (JSONArray) tokener.nextValue();
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject obj = array.getJSONObject(i);
+                    String title = obj.getString("title");
+                    String isbn = obj.getString("isbn");
+                    result.add(new Book(isbn, title));
+                }
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        Log.i(LOG_TAG, "getBooks: " + result);
+        return result;
+    }
+
+    @Override
+    public Book getBook(String isbn) {
+        Book result = null;
+        for (Book book : getBooks()) {
+            if (isbn.equals(book.getIsbn())) {
+                Log.i(LOG_TAG, "getBook: " + book);
+                result = book;
+                break;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Book addBook(String isbn, String title) {
+        Book result = null;
+        String content = put("book/" + isbn, title);
+        Log.d(LOG_TAG, "Result content:" + content);
+        if (content != null) {
+            try {
+                JSONTokener tokener = new JSONTokener(content);
+                JSONObject obj = (JSONObject) tokener.nextValue();
+                String jsonTitle = obj.getString("title");
+                String jsonIsbn = obj.getString("isbn");
+                result = new Book(jsonIsbn, jsonTitle);
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        Log.i(LOG_TAG, "addBook: " + result);
+        return result;
+    }
+
+    @Override
+    public Book updateBook(String isbn, String title) {
+        Book result = null;
+        String content = post("book/" + isbn, title);
+        Log.d(LOG_TAG, "Result content:" + content);
+        if (content != null) {
+            try {
+                JSONTokener tokener = new JSONTokener(content);
+                JSONObject obj = (JSONObject) tokener.nextValue();
+                String jsonTitle = obj.getString("title");
+                String jsonIsbn = obj.getString("isbn");
+                result = new Book(jsonIsbn, jsonTitle);
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        Log.i(LOG_TAG, "updateBook: " + result);
+        return result;
+    }
+
+    @Override
+    public Book removeBook(String isbn) {
+        Book result = null;
+        String content = delete("book/" + isbn);
+        Log.d(LOG_TAG, "Result content:" + content);
+        if (content != null) {
+            try {
+                JSONTokener tokener = new JSONTokener(content);
+                JSONObject obj = (JSONObject) tokener.nextValue();
+                String jsonTitle = obj.getString("title");
+                String jsonIsbn = obj.getString("isbn");
+                result = new Book(jsonIsbn, jsonTitle);
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        Log.i(LOG_TAG, "removeBook: " + result);
+        return result;
+    }
+
+    private String get(String path) {
         try {
             HttpGet request = new HttpGet(getRequestURI(path));
             HttpResponse res = httpClient.execute(request);
@@ -78,7 +182,7 @@ public class LibraryHttpClient {
         }
     }
 
-    public String put(String path, String title) {
+    private String put(String path, String title) {
         try {
             HttpPut request = new HttpPut(getRequestURI(path + "?title=" + title));
             HttpResponse res = httpClient.execute(request);
@@ -90,7 +194,7 @@ public class LibraryHttpClient {
         }
     }
     
-    public String post(String path, String title) {
+    private String post(String path, String title) {
         try {
             HttpPost request = new HttpPost(getRequestURI(path));
             request.setHeader("Content-Type", "application/json");
@@ -104,7 +208,7 @@ public class LibraryHttpClient {
         }
     }
     
-    public String delete(String path) {
+    private String delete(String path) {
         try {
             HttpDelete request = new HttpDelete(getRequestURI(path));
             HttpResponse res = httpClient.execute(request);

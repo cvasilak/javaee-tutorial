@@ -1,6 +1,9 @@
 package org.jboss.ee.tutorial.jaxrs.android;
 
 
+import org.jboss.ee.tutorial.jaxrs.android.data.Book;
+import org.jboss.ee.tutorial.jaxrs.android.data.Library;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,8 +30,8 @@ public class BookEditActivity extends Activity {
 
         if (savedInstanceState != null) {
             long index = savedInstanceState.getLong(LibraryApplication.KEY_BOOK_ISBN);
-            LibraryAccess library = getLibraryAccess();
-            currBook = library.getBookByIndex((int) index);
+            Library library = getLibrary();
+            currBook = library.getBooks().get((int) index);
         }
 
         registerButtonListeners();
@@ -45,7 +48,7 @@ public class BookEditActivity extends Activity {
         if (currBook == null) {
             Bundle extras = getIntent().getExtras();
             String isbn = extras != null ? extras.getString(LibraryApplication.KEY_BOOK_ISBN) : null;
-            currBook = isbn != null ? getLibraryAccess().getBook(isbn) : null;
+            currBook = isbn != null ? getLibrary().getBook(isbn) : null;
         }
         populateFields();
     }
@@ -82,7 +85,7 @@ public class BookEditActivity extends Activity {
     private void saveState() {
         String title = titleText.getText().toString();
         String isbn = isbnText.getText().toString();
-        LibraryAccess library = getLibraryAccess();
+        Library library = getLibrary();
         if (currBook == null) {
             library.addBook(isbn, title);
         }
@@ -91,8 +94,8 @@ public class BookEditActivity extends Activity {
         }
     }
 
-    private LibraryAccess getLibraryAccess() {
+    private Library getLibrary() {
         LibraryApplication app = (LibraryApplication) getApplication();
-        return app.getLibraryAccess();
+        return app.getLibrary();
     }
 }

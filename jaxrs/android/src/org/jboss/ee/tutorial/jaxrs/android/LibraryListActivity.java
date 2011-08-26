@@ -1,6 +1,10 @@
 package org.jboss.ee.tutorial.jaxrs.android;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.ee.tutorial.jaxrs.android.data.Book;
+import org.jboss.ee.tutorial.jaxrs.android.data.Library;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -41,17 +45,15 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
     }
     
     private void fillData() {
-        LibraryAccess library = getLibraryAccess();
-        Collection<String> bookNames = library.getBookTitles();
+        List<String> bookNames = new ArrayList<String>();
+        for (Book book : getLibrary().getBooks()) {
+            String title = book.getTitle();
+            bookNames.add(title);
+        }
         String[] items = new String[bookNames.size()];
         bookNames.toArray(items);
         ArrayAdapter<String> books = new ArrayAdapter<String>(this, R.layout.book_row, R.id.text1, items);
         setListAdapter(books);
-    }
-
-    private LibraryAccess getLibraryAccess() {
-        LibraryApplication app = (LibraryApplication) getApplication();
-        return app.getLibraryAccess();
     }
 
     @Override
@@ -89,8 +91,8 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
         switch (item.getItemId()) {
             case R.id.menu_delete:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                LibraryAccess library = getLibraryAccess();
-                Book book = library.getBookByIndex((int) info.id);
+                Library library = getLibrary();
+                Book book = library.getBooks().get((int) info.id);
                 library.removeBook(book.getIsbn());
                 fillData();
                 return true;
@@ -102,7 +104,7 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent(this, BookEditActivity.class);
-        Book book = getLibraryAccess().getBookByIndex((int) id);
+        Book book = getLibrary().getBooks().get((int) id);
         i.putExtra(LibraryApplication.KEY_BOOK_ISBN, book.getIsbn());
         startActivityForResult(i, ACTIVITY_EDIT);
     }
@@ -111,5 +113,10 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
+    }
+
+    private Library getLibrary() {
+        LibraryApplication app = (LibraryApplication) getApplication();
+        return app.getLibrary();
     }
 }
