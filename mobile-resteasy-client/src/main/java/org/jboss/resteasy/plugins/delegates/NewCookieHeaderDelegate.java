@@ -1,13 +1,13 @@
 package org.jboss.resteasy.plugins.delegates;
 
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.ext.RuntimeDelegate;
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
+public class NewCookieHeaderDelegate implements HeaderDelegate
 {
    public Object fromString(String newCookie) throws IllegalArgumentException
    {

@@ -21,9 +21,7 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
 public class Book {
 
     private String isbn;

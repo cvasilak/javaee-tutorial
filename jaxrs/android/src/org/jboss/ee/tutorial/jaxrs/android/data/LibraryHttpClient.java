@@ -26,7 +26,6 @@ import static org.jboss.ee.tutorial.jaxrs.android.LibraryApplication.LOG_TAG;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -43,7 +42,6 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.jboss.ee.tutorial.jaxrs.android.R;
-import org.jboss.ee.tutorial.jaxrs.android.R.string;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +57,7 @@ import android.util.Log;
  * @author thomas.diesler@jboss.com
  * @since 23-Aug-2011
  */
-public class LibraryHttpClient implements Library {
+public class LibraryHttpClient implements LibraryClient {
 
     private final Context context;
     private final HttpClient httpClient;

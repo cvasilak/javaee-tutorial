@@ -2,7 +2,7 @@ package org.jboss.ee.tutorial.jaxrs.android;
 
 
 import org.jboss.ee.tutorial.jaxrs.android.data.Book;
-import org.jboss.ee.tutorial.jaxrs.android.data.Library;
+import org.jboss.ee.tutorial.jaxrs.android.data.LibraryClient;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ public class BookEditActivity extends Activity {
 
         if (savedInstanceState != null) {
             long index = savedInstanceState.getLong(LibraryApplication.KEY_BOOK_ISBN);
-            Library library = getLibrary();
+            LibraryClient library = getLibrary();
             currBook = library.getBooks().get((int) index);
         }
 
@@ -85,7 +85,7 @@ public class BookEditActivity extends Activity {
     private void saveState() {
         String title = titleText.getText().toString();
         String isbn = isbnText.getText().toString();
-        Library library = getLibrary();
+        LibraryClient library = getLibrary();
         if (currBook == null) {
             library.addBook(isbn, title);
         }
@@ -94,7 +94,7 @@ public class BookEditActivity extends Activity {
         }
     }
 
-    private Library getLibrary() {
+    private LibraryClient getLibrary() {
         LibraryApplication app = (LibraryApplication) getApplication();
         return app.getLibrary();
     }

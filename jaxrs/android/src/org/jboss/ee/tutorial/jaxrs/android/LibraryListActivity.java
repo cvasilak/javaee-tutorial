@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.ee.tutorial.jaxrs.android.data.Book;
-import org.jboss.ee.tutorial.jaxrs.android.data.Library;
+import org.jboss.ee.tutorial.jaxrs.android.data.LibraryClient;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -91,7 +91,7 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
         switch (item.getItemId()) {
             case R.id.menu_delete:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                Library library = getLibrary();
+                LibraryClient library = getLibrary();
                 Book book = library.getBooks().get((int) info.id);
                 library.removeBook(book.getIsbn());
                 fillData();
@@ -115,7 +115,7 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
         fillData();
     }
 
-    private Library getLibrary() {
+    private LibraryClient getLibrary() {
         LibraryApplication app = (LibraryApplication) getApplication();
         return app.getLibrary();
     }

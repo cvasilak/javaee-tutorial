@@ -21,7 +21,7 @@
  */
 package org.jboss.ee.tutorial.jaxrs.client;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -45,7 +45,7 @@ public interface LibraryClient {
 
     @GET
     @Path("/books")
-    public Collection<Book> getBooks();
+    public List<Book> getBooks();
 
     @GET
     @Path("/book/{isbn}")
