@@ -40,12 +40,12 @@ public class LibraryPreferences extends PreferenceActivity implements OnSharedPr
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         String hostKey = getString(R.string.pref_host_key);
-        String host = prefs.getString(hostKey, getString(R.string.pref_host_summary));
+        String host = prefs.getString(hostKey, getString(R.string.pref_host_default));
         EditTextPreference hostPref = (EditTextPreference) findPreference(hostKey);
         hostPref.setSummary(host);
 
         String portKey = getString(R.string.pref_port_key);
-        String port = prefs.getString(portKey, getString(R.string.pref_port_summary));
+        String port = prefs.getString(portKey, getString(R.string.pref_port_default));
         EditTextPreference portPref = (EditTextPreference) findPreference(portKey);
         portPref.setSummary(port);
     }

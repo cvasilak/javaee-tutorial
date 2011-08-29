@@ -96,6 +96,6 @@ public class BookEditActivity extends Activity {
 
     private LibraryClient getLibrary() {
         LibraryApplication app = (LibraryApplication) getApplication();
-        return app.getLibrary();
+        return app.getLibraryClient();
     }
 }

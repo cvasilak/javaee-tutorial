@@ -26,7 +26,7 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
 
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +117,6 @@ public class LibraryListActivity extends ListActivity implements OnSharedPrefere
 
     private LibraryClient getLibrary() {
         LibraryApplication app = (LibraryApplication) getApplication();
-        return app.getLibrary();
+        return app.getLibraryClient();
     }
 }

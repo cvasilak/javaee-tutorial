@@ -15,6 +15,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -43,6 +44,12 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    public ApacheHttpClient4Executor()
    {
       this.httpClient = new DefaultHttpClient();
+   }
+
+   // [TDI] Add http params 
+   public ApacheHttpClient4Executor(HttpParams params)
+   {
+      this.httpClient = new DefaultHttpClient(params);
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient)

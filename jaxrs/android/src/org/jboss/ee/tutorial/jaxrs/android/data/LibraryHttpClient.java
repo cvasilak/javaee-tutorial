@@ -221,9 +221,9 @@ public class LibraryHttpClient implements LibraryClient {
     private URI getRequestURI(String path) throws URISyntaxException {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String hostKey = context.getString(R.string.pref_host_key);
-        String host = prefs.getString(hostKey, context.getString(R.string.pref_host_summary));
+        String host = prefs.getString(hostKey, context.getString(R.string.pref_host_default));
         String portKey = context.getString(R.string.pref_port_key);
-        int port = Integer.parseInt(prefs.getString(portKey, "80"));
+        String port = prefs.getString(portKey, context.getString(R.string.pref_port_default));
         URI requestURI = new URI("http://" +  host + ":" + port + "/jaxrs-sample/library/" + path);
         Log.i(LOG_TAG, "requestURI: " + requestURI);
         return requestURI;

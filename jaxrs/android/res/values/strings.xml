@@ -18,9 +18,9 @@
   <string name="pref_category_defaults_key">default_category</string>
   <string name="pref_host_key">jaxrs_library_host</string>
   <string name="pref_host_title">Host</string>
-  <string name="pref_host_summary">undefined</string>
+  <string name="pref_host_default">undefined</string>
   <string name="pref_port_key">jaxrs_library_port</string>
   <string name="pref_port_title">Port</string>
-  <string name="pref_port_summary">undefined</string>
+  <string name="pref_port_default">80</string>
   
 </resources>

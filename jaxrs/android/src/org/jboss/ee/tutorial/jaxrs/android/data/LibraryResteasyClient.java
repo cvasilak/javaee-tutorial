@@ -23,16 +23,20 @@ package org.jboss.ee.tutorial.jaxrs.android.data;
 
 import static org.jboss.ee.tutorial.jaxrs.android.LibraryApplication.LOG_TAG;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.ee.tutorial.jaxrs.android.R;
+import org.apache.http.HttpVersion;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.jboss.ee.tutorial.jaxrs.android.LibraryApplication;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -43,58 +47,85 @@ import android.util.Log;
 public class LibraryResteasyClient implements LibraryClient {
 
     private final Context context;
+    private String lastRequestURI;
     private LibraryClient client;
 
     public LibraryResteasyClient(Context context) {
         this.context = context;
-        
         RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-        client = ProxyFactory.create(LibraryClient.class, getRequestURI());
     }
 
     @Override
     public List<Book> getBooks() {
-        List<Book> result = client.getBooks();
+        List<Book> result = new ArrayList<Book>();
+        try {
+            result = getLibraryClient().getBooks();
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+        }
         Log.i(LOG_TAG, "getBooks: " + result);
         return result;
     }
 
     @Override
     public Book getBook(String isbn) {
-        Book result = client.getBook(isbn);
+        Book result = null;
+        try {
+            result = getLibraryClient().getBook(isbn);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+        }
         Log.i(LOG_TAG, "getBook: " + result);
         return result;
     }
 
     @Override
     public Book addBook(String isbn, String title) {
-        Book result = client.addBook(isbn, title);
+        Book result = null;
+        try {
+            result = getLibraryClient().addBook(isbn, title);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+        }
         Log.i(LOG_TAG, "addBook: " + result);
         return result;
     }
 
     @Override
     public Book updateBook(String isbn, String title) {
-        Book result = client.updateBook(isbn, title);
+        Book result = null;
+        try {
+            result = getLibraryClient().updateBook(isbn, title);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+        }
         Log.i(LOG_TAG, "updateBook: " + result);
         return result;
     }
 
     @Override
     public Book removeBook(String isbn) {
-        Book result = client.removeBook(isbn);
+        Book result = null;
+        try {
+            result = getLibraryClient().removeBook(isbn);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+        }
         Log.i(LOG_TAG, "removeBook: " + result);
         return result;
     }
 
-    private String getRequestURI() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String hostKey = context.getString(R.string.pref_host_key);
-        String host = prefs.getString(hostKey, "javaeetutorial-tdiesler.rhcloud.com");
-        String portKey = context.getString(R.string.pref_port_key);
-        int port = Integer.parseInt(prefs.getString(portKey, "80"));
-        String requestURI = "http://" +  host + ":" + port + "/jaxrs-sample/library";
-        Log.i(LOG_TAG, "requestURI: " + requestURI);
-        return requestURI;
+    private LibraryClient getLibraryClient() {
+        String requestURI = LibraryApplication.getRequestURI(context);
+        if (client == null || !requestURI.equals(lastRequestURI)) {
+            BasicHttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(params, HTTP.DEFAULT_CONTENT_CHARSET);
+            HttpProtocolParams.setUseExpectContinue(params, false);
+            client = ProxyFactory.create(LibraryClient.class, requestURI, new ApacheHttpClient4Executor(params));
+            lastRequestURI = requestURI;
+        }
+        return client;
     }
+
 }
