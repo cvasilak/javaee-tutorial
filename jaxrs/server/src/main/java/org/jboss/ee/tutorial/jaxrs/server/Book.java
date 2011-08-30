@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author thomas.diesler@jboss.com
  * @since 23-Aug-2011
  */
-@XmlRootElement
 public class Book {
 
     private String isbn;

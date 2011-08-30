@@ -29,8 +29,8 @@
   <!-- Dependencies -->
   <dependencies>
     <dependency>
-      <groupId>org.jboss.mobile.resteasy</groupId>
-      <artifactId>mobile-resteasy-client</artifactId>
+      <groupId>org.jboss.resteasy.mobile</groupId>
+      <artifactId>resteasy-mobile</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.as</groupId>
