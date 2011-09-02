@@ -31,18 +31,15 @@
   <!-- Properties -->
   <properties>
     <version.org.jboss.arquillian.core>1.0.0.CR4</version.org.jboss.arquillian.core>
+    <version.org.jboss.as7>7.0.1.Final</version.org.jboss.as7>
     <version.org.jboss.logging>3.0.0.GA</version.org.jboss.logging>
     <version.org.jboss.logmanager>1.2.0.GA</version.org.jboss.logmanager>
     <version.org.jboss.resteasy.jaxrs>2.2.1.GA</version.org.jboss.resteasy.jaxrs>
     <version.org.jboss.resteasy.mobile>1.0.0</version.org.jboss.resteasy.mobile>
-    <version.org.jboss.as7>7.0.1.Final</version.org.jboss.as7>
+    <version.org.jboss.spec.javax.jms>1.0.0.Final</version.org.jboss.spec.javax.jms>
+    <version.org.projectodd.stilts>0.1.15-SNAPSHOT</version.org.projectodd.stilts>
     <version.junit>4.8.2</version.junit>
   </properties>
-
-  <!-- Modules -->
-  <modules>
-    <module>jaxrs</module>
-  </modules>
 
   <!-- Source Control -->
   <scm>
@@ -54,6 +51,16 @@
   <!-- DependencyManagement -->
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.projectodd.stilts</groupId>
+        <artifactId>stilts-stomp-client</artifactId>
+        <version>${version.org.projectodd.stilts}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectodd.stilts</groupId>
+        <artifactId>stilts-stomplet-server-core</artifactId>
+        <version>${version.org.projectodd.stilts}</version>
+      </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-container-test-api</artifactId>
@@ -95,6 +102,11 @@
         <version>${version.org.jboss.resteasy.mobile}</version>
       </dependency>
       <dependency>
+        <groupId>org.jboss.spec.javax.jms</groupId>
+        <artifactId>jboss-jms-api_1.1_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.jms}</version>
+      </dependency>
+      <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
         <version>${version.junit}</version>
@@ -119,5 +131,11 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <!-- Modules -->
+  <modules>
+    <module>jaxrs</module>
+    <module>jms</module>
+  </modules>
 
 </project>
